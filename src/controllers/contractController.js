@@ -1,4 +1,5 @@
-const {getProfileQuery, contractStatuses} = require('../utils');
+const {getProfileQuery} = require('../utils');
+const {contractStatuses} = require('../enums');
 
 async function getContractById(req) {
 	const {
