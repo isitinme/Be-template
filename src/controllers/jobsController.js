@@ -51,8 +51,8 @@ async function payForJob(req, res) {
 	const {ContractorId} = await Contract.findOne({where: {id: ContractId}});
 	const {balance: contractorBalance} = await Profile.findOne({where: {id: ContractorId}});
 	await Promise.all([
-		Profile.update({balance: (clientBalance || 0) - price}, {where: {id: profileId}});
-		Profile.update({balance: (contractorBalance || 0) + price}, {where: {id: ContractorId}}); 
+		Profile.update({balance: (clientBalance || 0) - price}, {where: {id: profileId}}),
+		Profile.update({balance: (contractorBalance || 0) + price}, {where: {id: ContractorId}}),
 	]);
 	await Job.update({paid: true}, {where: {id: job_id}});
 }
