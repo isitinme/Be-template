@@ -1,0 +1,5 @@
+timeout: 1000
+exit: true
+file: 'test/setup.js'
+spec: 'test/**/*.spec.js'
+reporter: 'spec'
