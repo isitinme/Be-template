@@ -1,3 +1,4 @@
+const {Op} = require('sequelize');
 const {getProfileQuery} = require('../utils');
 const {contractStatuses} = require('../enums');
 
@@ -20,7 +21,12 @@ async function getActiveContracts(req) {
 	const {Contract} = req.app.get('models');
 	const query = {
 		where: {
-			status: contractStatuses.inProgress,
+			status: {
+				[Op.in]: [
+					contractStatuses.inProgress,
+					contractStatuses.new,
+				],
+			},
 			...getProfileQuery(req.profile),
 		},
 	};
