@@ -1,12 +1,15 @@
 const {Op, fn, col} = require('sequelize');
 const {contractStatuses, profileTypes} = require('../enums');
 
-async function getBestProfessions(req) {
+async function getBestProfession(req) {
 	const {
 		query: {start, end},
 	} = req;
 	const {Job, Contract, Profile} = req.app.get('models');
 	const [bestContractor] = await Profile.findAll({
+		where: {
+			type: profileTypes.contractor,
+		},
 		attributes: [
 			'profession',
 			[fn('SUM', col('Contractor.Jobs.price')), 'totalEarned'],
@@ -18,9 +21,6 @@ async function getBestProfessions(req) {
 		include: {
 			model: Contract,
 			as: 'Contractor',
-			where: {
-				status: contractStatuses.inProgress,
-			},
 			include: {
 				model: Job,
 				where: {
@@ -36,6 +36,52 @@ async function getBestProfessions(req) {
 	return {profession, totalEarned};
 }
 
+async function getBestClients(req) {
+	const {
+		query: {start, end, limit = 2},
+	} = req;
+	const {Job, Contract, Profile} = req.app.get('models');
+	const bestClients = await Profile.findAll({
+		where: {
+			type: profileTypes.client,
+		},
+		attributes: [
+			'id',
+			'firstName',
+			'lastName',
+			[fn('SUM', col('Client.Jobs.price')), 'paid'],
+		],
+		group: 'Client.ClientId',
+		order: [
+			[fn('SUM', col('Client.Jobs.price')), 'DESC'],
+		],
+		include: {
+			model: Contract,
+			as: 'Client',
+			include: {
+				model: Job,
+				where: {
+					paid: true,
+					paymentDate: {
+						[Op.between]: [new Date(start), new Date(end)],
+					},
+				},
+			},
+		},
+	});
+	return bestClients
+		.slice(0, limit)
+		.map((client) => {
+			const {id, paid} = client.toJSON();
+			return {
+				id,
+				paid,
+				fullName: client.getFullName(),
+			};
+		});
+}
+
 module.exports = {
-	getBestProfessions,
+	getBestProfession,
+	getBestClients,
 };

@@ -5,7 +5,13 @@ const sequelize = new Sequelize({
   storage: './database.sqlite3'
 });
 
-class Profile extends Sequelize.Model {}
+class Profile extends Sequelize.Model {
+  getFullName() {
+	const {firstName, lastName} = this.toJSON();
+    return `${firstName} ${lastName}`;
+  }
+}
+
 Profile.init(
   {
     firstName: {
@@ -25,7 +31,7 @@ Profile.init(
     },
     type: {
       type: Sequelize.ENUM('client', 'contractor')
-    }
+    },
   },
   {
     sequelize,
