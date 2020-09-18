@@ -4,7 +4,7 @@ const {sequelize} = require('../../src/model');
 
 describe('Jobs', () => {
 	it('should successfully get unpaid jobs for the given profile', async () => {
-		const profile_id = 2; 
+		const profile_id = 2;
 		const {data} = await request.get('/jobs/unpaid', {headers: {profile_id}});
 		expect(data).to.be.an('array');
 		for (const job of data) {

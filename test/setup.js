@@ -1,6 +1,6 @@
 before((done) => {
 	process.on('server:listen', () => {
-		done();	
+		done();
 	});
 	require('../src/server');
 });

@@ -11,7 +11,7 @@
   "scripts": {
     "start": "nodemon ./src/server.js",
     "seed": "node ./scripts/seedDb.js",
-	"test": "yarn seed > /dev/null && NODE_ENV=test mocha"
+    "test": "yarn seed > /dev/null && NODE_ENV=test mocha"
   },
   "devDependencies": {
     "axios": "^0.20.0",
