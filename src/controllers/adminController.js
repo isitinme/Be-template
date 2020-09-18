@@ -6,15 +6,15 @@ async function getBestProfessions(req) {
 		query: {start, end},
 	} = req;
 	const {Job, Contract, Profile} = req.app.get('models');
-	const result = await Profile.findAll({
+	const [bestContractor] = await Profile.findAll({
 		attributes: [
 			'profession',
-			// [fn('SUM', col('price')), 'totalPrice'],
+			[fn('SUM', col('Contractor.Jobs.price')), 'totalEarned'],
 		],
-		// order: [
-			// [col('Contractor.Jobs.price'), 'DESC'],
-		// ],
-		// group: 'profession',
+		order: [
+			[fn('SUM', col('Contractor.Jobs.price')), 'DESC'],
+		],
+		group: 'profession',
 		include: {
 			model: Contract,
 			as: 'Contractor',
@@ -23,9 +23,6 @@ async function getBestProfessions(req) {
 			},
 			include: {
 				model: Job,
-				attributes: [
-					'price',
-				],
 				where: {
 					paymentDate: {
 						[Op.between]: [new Date(start), new Date(end)],
@@ -35,7 +32,8 @@ async function getBestProfessions(req) {
 			},
 		},
 	});
-	return result;
+	const {profession, totalEarned} = bestContractor.toJSON();
+	return {profession, totalEarned};
 }
 
 module.exports = {

@@ -7,8 +7,6 @@ const {getProfile} = require('./middleware/getProfile')
 const routes = require('./routes');
 
 app.use(bodyParser.json());
-app.use(getProfile);
-
 app.set('sequelize', sequelize);
 app.set('models', sequelize.models);
 
